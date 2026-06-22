@@ -572,8 +572,9 @@
       </p>
       <div class="hero-actions">
         <a class="button" href="#results">Jump to Results</a>
-        <a class="button secondary" href="#video">Video Outline</a>
+        <a class="button secondary" href="#why-hybrid">Why the hybrid wins</a>
         <a class="button secondary" href="research_log.md">Open Research Log</a>
+        <a class="button secondary" href="https://github.com/jonathangu/coframe-personalization">View source on GitHub ↗</a>
       </div>
       <div class="score-strip">
         <div class="score">
@@ -609,6 +610,7 @@
       <a href="#ml-model">ML Model</a>
       <a href="#observability">Displays</a>
       <a href="#results">Results</a>
+      <a href="#why-hybrid">Why the hybrid</a>
       <a href="#edge-cases">Edge cases</a>
       <a href="#productionization">Productionization</a>
       <a href="#learnings">Learnings</a>
@@ -894,10 +896,10 @@ Goal:
             Conceptually, yes: causal comparisons need the assignment mechanism.
             Practically, the final policy estimates <code>E[reward | context, action]</code>
             using the randomized log and heavy shrinkage. For uniform datasets,
-            the propensity is just a constant. For <code>helios</code>, using raw
-            <code>1 / propensity</code> weights would produce 20x rows and high
-            variance, so the safer scored policy is direct outcome modeling with
-            support-aware shrinkage. In production OPE, propensities become
+            the propensity is just a constant. For <code>helios</code>, a logged
+            propensity of 0.05 means a raw <code>1 / propensity</code> weight of 20,
+            so a few rows can dominate and inflate variance — the safer scored policy
+            is direct outcome modeling with support-aware shrinkage. In production OPE, propensities become
             central again because we will not have hidden truth files.
           </p>
         </div>
@@ -1237,11 +1239,53 @@ iteration 15:
 
       <h3>How to think about stale data and drift</h3>
       <p>
-        Stale data matters when the mapping <code>(context, action) -> reward</code>
-        changes over time. In that case, old rows can be actively misleading.
-        <code>zephyr</code> appears to be the cautionary dataset: the recency
-        policy improves it from 47.4% to 58.9%, while slightly hurting stationary
-        datasets because it throws away still-useful history.
+        Stale data matters when <code>P(reward | context, action)</code> changes over
+        time — then old rows are not just less fresh, they are <strong>actively
+        misleading</strong>. <code>zephyr</code> is the case: the best arm <strong>flips
+        at the midpoint</strong> of the timeline.
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>zephyr — true CVR</th><th class="num">variant_2</th><th class="num">variant_1</th></tr></thead>
+          <tbody>
+            <tr><td>first half</td><td class="num winner">12.06%</td><td class="num">2.69%</td></tr>
+            <tr><td>second half</td><td class="num">3.94%</td><td class="num winner">13.31%</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        A full-history model averages two incompatible regimes, so it keeps "remembering"
+        that <code>variant_2</code> used to be great and adapts too slowly. Recency
+        weighting discounts old rows — <code>weight = 0.5 ** (age_days / half_life)</code>,
+        so with a 4-day half-life a row 8 days old counts as a quarter of a row. That is
+        why on zephyr: EB full-history <strong>47.4%</strong> → EB recency
+        <strong>58.9%</strong>, and the time-aware <code>gbm_tlearner</code> reaches
+        <strong>75.9%</strong>.
+      </p>
+
+      <p>
+        But recency is <strong>not free</strong>: it trades bias from stale data for
+        variance from a smaller <strong>effective sample size</strong>. Forgetting old rows
+        on a <em>stable</em> dataset throws away valid signal. A single global 4-day
+        half-life proved this — it helped zephyr but hurt every stationary dataset:
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th><code>seg_eb_recency</code> − <code>seg_eb</code></th><th class="num">zephyr</th><th class="num">helios</th><th class="num">meadow</th><th class="num">rotation</th><th class="num">vega</th></tr></thead>
+          <tbody>
+            <tr><td>Δ captured headroom (pts)</td><td class="num winner">+11.5</td><td class="num">−2.2</td><td class="num">−2.2</td><td class="num">−3.7</td><td class="num">−7.1</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        <code>vega</code> is hit hardest (−7.1) because it already has only 6,000 rows —
+        recency made a sparse problem sparser. So "always weight recent data higher" isn't
+        <em>wrong</em>, it's a <strong>bias-variance choice</strong>: keep long memory while
+        the process is stable, switch to short memory only once it has changed.
       </p>
 
       <div class="grid two" style="margin-top: 1rem;">
@@ -1479,6 +1523,85 @@ iteration 15:
       </div>
     </section>
 
+    <section id="why-hybrid">
+      <h2>Why the hybrid wins</h2>
+      <p class="section-intro">
+        <code>hybrid_eb_gbm</code> is not a new model — it is a <strong>per-window
+        router</strong> between two base learners with opposite error profiles, gated on
+        a leak-free signal: how much training data exists so far.
+      </p>
+
+      <div class="plain-english">
+        <strong>Explain it like I am 15:</strong> imagine two students. One is cautious
+        and only says what the data clearly supports (the empirical-Bayes table). The
+        other is clever and finds subtle patterns, but makes things up when it hasn't
+        seen enough (the boosted trees). Before each test we check how much they've
+        studied: lots of data, trust the clever one; little data, trust the cautious one.
+        That one rule beats always trusting either student.
+      </div>
+
+      <div class="grid two" style="margin-top: 1rem;">
+        <div class="card">
+          <h3><code>seg_eb</code> — empirical-Bayes table</h3>
+          <ul>
+            <li><strong>Low variance.</strong> Shrinks thin cells to stable priors; never overreacts to a handful of rows.</li>
+            <li><strong>Some bias.</strong> Additive (mains + a few crosses) — cannot represent arbitrary interactions or time structure.</li>
+            <li>Best when data is <strong>sparse</strong> or <strong>early</strong>.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3><code>gbm_tlearner</code> — boosted trees</h3>
+          <ul>
+            <li><strong>Low bias.</strong> Captures arbitrary interactions and uses a time/age feature, so it tracks drift.</li>
+            <li><strong>High variance.</strong> Overfits thin cells — on sparse <code>vega</code> it collapses to 32.7%.</li>
+            <li>Best when data is <strong>large</strong> and the signal is nonlinear or non-stationary.</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>The switch is on support, every window</h3>
+      <pre><code>each walk-forward window:
+  if len(train) >= 50,000  AND  every arm has >= 2,000 rows:
+      use gbm_tlearner        # rich enough to trust the flexible model
+  else:
+      use seg_eb              # sparse / early -> shrink, do no harm</code></pre>
+      <p>
+        The gate reads only <em>training</em> support, so it is leak-free. Because it runs
+        every window, it is also a <strong>cold-start-to-mature switch over time</strong>:
+        the data-poor early windows use EB (which converges faster from little data), and
+        once history is large the same dataset graduates to GBM.
+      </p>
+
+      <h3>What the gate produces, dataset by dataset</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Dataset</th><th class="num">seg_eb</th><th class="num">gbm</th><th class="num">hybrid</th><th>What the gate did</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>vega</code> · 6k rows</td><td class="num">55.3</td><td class="num">32.7</td><td class="num winner">55.3</td><td>Never reaches 50k → always EB. <strong>Avoids GBM's 23-point collapse.</strong></td></tr>
+            <tr><td><code>zephyr</code> · 200k, drift</td><td class="num">47.4</td><td class="num">75.9</td><td class="num">72.7</td><td>Graduates to GBM, whose time feature tracks the regime flip. <strong>+25 over EB.</strong></td></tr>
+            <tr><td><code>meadow</code> · 150k</td><td class="num">72.2</td><td class="num">78.7</td><td class="num">78.4</td><td>GBM captures the interactions EB can't. +6 over EB.</td></tr>
+            <tr><td><code>helios</code> · 150k</td><td class="num">77.3</td><td class="num">78.3</td><td class="num winner">79.7</td><td><strong>Beats both</strong> — EB early, GBM late, summed over the walk-forward.</td></tr>
+            <tr><td><code>rotation</code> · 120k, 10 arms</td><td class="num">61.2</td><td class="num">61.4</td><td class="num winner">61.9</td><td>10 arms keep some windows under 2k/arm → conservative; edges both.</td></tr>
+            <tr><td><code>atlas</code> · no headroom</td><td class="num">n/a</td><td class="num">n/a</td><td class="num">n/a</td><td>Nothing to learn; do no harm.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout good">
+        <strong>Why it's the winner (69.6% &gt; 65.4% GBM &gt; 62.7% EB):</strong> it takes
+        boosting's upside on the large, nonlinear, drifting datasets <em>without</em> paying
+        GBM's catastrophic variance cost on sparse <code>vega</code> — and because it
+        defaults to EB unless support is clearly large, it can never be much worse than the
+        safe baseline. It is a <strong>guarded ensemble — model selection on a leak-free
+        signal</strong>, the principled answer to "which functional form?": <em>it depends
+        on support, so decide per window.</em> This is exactly what the arm-sensitivity
+        analysis prescribed — GBM's disagreements with EB <em>add</em> value where data is
+        rich and <em>destroy</em> it where it is thin.
+      </div>
+    </section>
+
     <section id="edge-cases">
       <h2>Edge Cases</h2>
       <p class="section-intro">
@@ -1504,7 +1627,7 @@ iteration 15:
             <tr>
               <td><strong>helios</strong></td>
               <td>Non-uniform assignment and tiny propensities.</td>
-              <td>Condition on context; avoid high-variance raw IPW; reaches 77.3%.</td>
+              <td>Raw arm averages are biased, but reward modeling is valid conditional on context; avoid raw IPW (0.05 &rarr; weight 20). Hybrid reaches 79.7%.</td>
             </tr>
             <tr>
               <td><strong>rotation</strong></td>
@@ -1536,17 +1659,32 @@ iteration 15:
 
       <h3>Off-policy evaluation when counterfactuals are unavailable</h3>
       <p>
-        Offline here we score against the hidden per-arm oracle. In production you
-        replace that with an <strong>off-policy estimator</strong> — IPS, self-normalized
-        IPS (SNIPS), or <strong>doubly-robust</strong> (an outcome model corrected by
-        inverse-propensity residuals) — reported with confidence intervals. The
-        <code>helios</code> diagnostic is the motivation: under raw <code>1/propensity</code>
-        weighting, the effective sample size collapses from 150,000 rows to about
-        <strong>40,000</strong> (propensity-0.05 rows carry weight 20), so the
-        variance-controlled doubly-robust/SNIPS estimator is preferred over raw IPW.
-        The operational requirement: <strong>log the propensity of every served
-        decision</strong>, or OPE is impossible after the fact.
+        Offline here we score against the hidden per-arm oracle. In production there is no
+        oracle, so you estimate a new policy's value from logged data. The
+        <strong>doubly-robust (DR)</strong> estimator is the workhorse — it combines a
+        reward model with propensity weighting:
       </p>
+      <pre><code>V_DR(pi) = average over logged rows of:
+    m_hat(x, pi(x))                                # reward-model guess for the new policy's choice
+  + 1{a == pi(x)} / p(a | x) * ( y - m_hat(x, a) ) # correction, ONLY when the log happened to show
+                                                   # the same arm the new policy would have chosen</code></pre>
+      <p>
+        It is "doubly robust" because the estimate stays consistent if <em>either</em> the
+        reward model <em>or</em> the propensities are correct — two parachutes, you only
+        need one to open. Intuition: start from the model's prediction; on the rows where
+        the logged arm matches the new policy's choice, correct it by the
+        propensity-weighted residual <code>(actual − predicted)</code>.
+        <strong>SNIPS</strong> (self-normalized) and <strong>weight clipping</strong> tame
+        the variance that small propensities create.
+      </p>
+      <div class="callout warn">
+        <strong>DR does not manufacture overlap.</strong> If a policy wants an arm that was
+        almost never shown for a context, <code>p(a|x) ≈ 0</code> and the correction term
+        explodes — no estimator recovers counterfactuals the data barely contains. That is
+        the same variance story as the <code>helios</code> ESS drop (150k → ~40k under raw
+        IPW), and it is why production keeps exploration alive and <strong>logs a propensity
+        for every served decision</strong>.
+      </div>
 
       <h3>Exploration vs. greedy exploitation</h3>
       <p>

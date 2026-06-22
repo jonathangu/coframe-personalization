@@ -46,6 +46,46 @@ headroom; captured% is n/a — see edge cases). **Shipped policy: `hybrid_eb_gbm
   drift dataset, +11.5pp) but hurts the four stationary datasets, so it is an ablation,
   not the default; the production answer is change-point-gated decay.
 
+### Why the hybrid is the winner (deep version)
+
+`hybrid_eb_gbm` is **not a new model** — it is a **per-window router** between two base
+learners with opposite error profiles, gated on a leak-free signal (training support):
+
+```text
+each walk-forward window:
+  if len(train) >= 50,000  AND  every arm has >= 2,000 rows:  use gbm_tlearner
+  else:                                                       use seg_eb
+```
+
+- **`seg_eb`** — low variance, mild bias: shrinks thin cells to priors, but its additive
+  form can't represent arbitrary interactions or time structure.
+- **`gbm_tlearner`** — low bias, high variance: captures interactions and uses a time/age
+  feature (so it tracks drift), but overfits thin cells (`vega` 32.7%).
+
+The datasets span both regimes, so **no single functional form is best everywhere.** The
+gate picks the right one per window:
+
+| dataset | seg_eb | gbm | hybrid | what the gate did |
+|---|---|---|---|---|
+| vega (6k) | 55.3 | 32.7 | **55.3** | never reaches 50k → always EB; avoids GBM's 23-pt collapse |
+| zephyr (drift) | 47.4 | 75.9 | 72.7 | graduates to GBM; the time feature tracks the regime flip (+25 over EB) |
+| meadow (150k) | 72.2 | 78.7 | 78.4 | GBM captures interactions EB can't |
+| helios (150k) | 77.3 | 78.3 | **79.7** | beats both — EB early, GBM late, summed over the walk-forward |
+| rotation (10 arms) | 61.2 | 61.4 | **61.9** | 10 arms keep windows under 2k/arm → conservative; edges both |
+| atlas | n/a | n/a | n/a | no headroom; do no harm |
+
+It beats **both** base learners on average (69.6 > 65.4 GBM > 62.7 EB) for two reasons:
+1. **It avoids GBM's one catastrophic failure** (sparse `vega`) by defaulting to EB unless
+   support is clearly large — a "do no harm vs. the conservative baseline" property.
+2. **The gate is also a cold-start → mature switch over time.** Early walk-forward windows
+   (data-poor) use EB, which converges faster from little data; later windows graduate to
+   GBM. So on `helios` and `rotation` the hybrid edges *both* pure policies — it used the
+   better learner at each *stage* of data accumulation, and the cumulative score integrates
+   EB's stronger early performance with GBM's stronger late performance.
+
+This is exactly what the arm-sensitivity analysis prescribed: GBM's disagreements with EB
+*add* value where data is rich and *destroy* it where it is thin — so gate on richness.
+
 ### What was rejected, and why
 - **Raw inverse-propensity weighting (IPW)** — assignment is unconfounded given the
   observed features (Rosenbaum–Rubin: conditioning on X is the adjustment), so IPW

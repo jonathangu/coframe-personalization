@@ -39,7 +39,7 @@ empirical-Bayes when data is thin, gradient-boosted trees when support is large)
 | Non-stationarity | **zephyr** (best arm flips at t≈0.5) | recency weighting recovers it (+11.5pp); made adaptive, not global | Edge cases · `<zephyr>_over_time.png` |
 | Changing action sets | **rotation** (arms 07/08 leave, 09/10 enter) | score all arms, mask to available, prior for brand-new arms | Edge cases · `action_availability.png` |
 | Do no harm (no headroom) | **atlas** (every arm identical) | EB collapses all arms to one estimate → best-fixed; captured% n/a, can't lose | Edge cases |
-| Biased logging (bonus) | **helios** (propensity, latent confounder) | conditioning on observed context removes the bias; propensity ignored for the score | Randomization section · `propensity_diagnostics.png` |
+| Non-uniform assignment (bonus) | **helios** (skewed shares; propensities to 0.05) | raw arm averages are biased, but reward modeling is valid conditional on context; avoid raw IPW (0.05 → weight 20), keep propensity for diagnostics/OPE | Randomization section · `propensity_diagnostics.png` |
 
 > "Part of the exercise is discovering which datasets exhibit these" — we discovered
 > them by profiling (the observability plots), then designed the policy around them.
