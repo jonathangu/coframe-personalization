@@ -1,6 +1,6 @@
 # Coframe Personalization Take-Home — Solution
 
-**Author:** Jonathan Gu · **Live report:** https://jonathangu.github.io/coframe-personalization/
+**Author:** Jonathan Gu · **Live report:** https://www.jonathangu.com/coframe-personalization/
 
 > Can a policy reliably pick a better variant per visitor than the single best
 > variant — and how much extra conversion does that capture? **Yes.** The shipped
@@ -33,7 +33,7 @@ the interaction and drift signal on the big datasets).
 
 ## Read this first
 
-- **[`solution/report.html`](solution/report.html)** — the full write-up (also the [live page](https://jonathangu.github.io/coframe-personalization/)).
+- **[`solution/report.html`](solution/report.html)** — the full write-up (also the [live page](https://www.jonathangu.com/coframe-personalization/)).
 - **[`solution/research_log.md`](solution/research_log.md)** — research log: what was tried, what drove each decision, what was rejected, and every AI tool used.
 - **[`solution/DELIVERABLES_COVERAGE.md`](solution/DELIVERABLES_COVERAGE.md)** — maps each required topic to where it's answered.
 - **[`solution/VIDEO_SCRIPT.md`](solution/VIDEO_SCRIPT.md)** — the video walkthrough script.
