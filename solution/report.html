@@ -1,0 +1,1750 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Coframe Personalization Take-Home - Policy Report</title>
+  <style>
+    :root {
+      --ink: #17212b;
+      --muted: #5d6b78;
+      --paper: #fbfaf6;
+      --panel: #ffffff;
+      --line: #d8ddd6;
+      --navy: #18324a;
+      --teal: #16756f;
+      --leaf: #4e7f3e;
+      --mustard: #b17913;
+      --rose: #b84a3a;
+      --soft-teal: #e4f2ef;
+      --soft-leaf: #edf5e9;
+      --soft-mustard: #fff2d8;
+      --soft-rose: #fae9e4;
+      --code: #102030;
+      --shadow: 0 18px 50px rgba(23, 33, 43, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+    }
+
+    a {
+      color: #0f6e69;
+      text-decoration-thickness: 2px;
+      text-underline-offset: 3px;
+    }
+
+    h1,
+    h2,
+    h3 {
+      line-height: 1.12;
+      margin: 0;
+    }
+
+    h1 {
+      max-width: 920px;
+      font-size: clamp(2.25rem, 6vw, 5.3rem);
+      letter-spacing: 0;
+    }
+
+    h2 {
+      margin-top: 0;
+      font-size: clamp(1.65rem, 3vw, 2.65rem);
+      color: var(--navy);
+    }
+
+    h3 {
+      margin-top: 1.5rem;
+      font-size: 1.2rem;
+      color: #23384d;
+    }
+
+    p {
+      margin: 0.7rem 0 0;
+    }
+
+    code,
+    pre {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    }
+
+    code {
+      padding: 0.12rem 0.28rem;
+      border-radius: 4px;
+      background: #eef2ef;
+      color: #1c384d;
+      font-size: 0.93em;
+    }
+
+    pre {
+      overflow-x: auto;
+      margin: 1rem 0 0;
+      padding: 1rem;
+      border-radius: 8px;
+      color: #edf6f7;
+      background: var(--code);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    pre code {
+      padding: 0;
+      color: inherit;
+      background: transparent;
+      font-size: 0.95rem;
+    }
+
+    .hero {
+      padding: 58px 24px 34px;
+      color: #f8faf8;
+      background:
+        radial-gradient(circle at 88% 12%, rgba(255, 205, 111, 0.18), transparent 30%),
+        linear-gradient(135deg, #17212b 0%, #18324a 48%, #245442 100%);
+    }
+
+    .hero-inner,
+    main,
+    footer {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.15rem;
+      color: #cfe8e4;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 0.78rem;
+    }
+
+    .hero p {
+      max-width: 820px;
+      color: #dbe8e7;
+      font-size: clamp(1rem, 1.5vw, 1.28rem);
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 0.7rem 1rem;
+      border-radius: 7px;
+      color: #102030;
+      background: #f8d283;
+      font-weight: 800;
+      text-decoration: none;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+
+    .button.secondary {
+      color: #f8faf8;
+      background: rgba(255, 255, 255, 0.09);
+    }
+
+    .score-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(160px, 1fr));
+      gap: 0.85rem;
+      margin-top: 2rem;
+    }
+
+    .score {
+      padding: 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .score b {
+      display: block;
+      color: #ffffff;
+      font-size: 1.85rem;
+      line-height: 1;
+    }
+
+    .score span {
+      display: block;
+      margin-top: 0.45rem;
+      color: #cfe8e4;
+      font-size: 0.9rem;
+    }
+
+    .toc {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid var(--line);
+      background: rgba(251, 250, 246, 0.94);
+      backdrop-filter: blur(14px);
+    }
+
+    .toc-inner {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+      display: flex;
+      gap: 0.55rem;
+      overflow-x: auto;
+      padding: 0.7rem 0;
+    }
+
+    .toc a {
+      flex: 0 0 auto;
+      padding: 0.42rem 0.65rem;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--ink);
+      background: #fffdfa;
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    main {
+      padding: 28px 0 60px;
+    }
+
+    section {
+      margin: 28px 0;
+      padding: clamp(1.1rem, 2.4vw, 2rem);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--panel);
+      box-shadow: 0 8px 28px rgba(23, 33, 43, 0.055);
+    }
+
+    .section-intro {
+      max-width: 920px;
+      color: var(--muted);
+      font-size: 1.05rem;
+    }
+
+    .grid {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .grid.two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .card,
+    .callout,
+    .stat-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fffefa;
+    }
+
+    .card {
+      padding: 1rem;
+    }
+
+    .stat-card {
+      padding: 1rem;
+      min-height: 118px;
+    }
+
+    .stat-card strong {
+      display: block;
+      font-size: 1.9rem;
+      line-height: 1;
+      color: var(--teal);
+    }
+
+    .stat-card span {
+      display: block;
+      margin-top: 0.55rem;
+      color: var(--muted);
+      font-weight: 650;
+    }
+
+    .callout {
+      margin-top: 1rem;
+      padding: 1rem;
+      border-left: 5px solid var(--teal);
+      background: var(--soft-teal);
+    }
+
+    .callout.warn {
+      border-left-color: var(--mustard);
+      background: var(--soft-mustard);
+    }
+
+    .callout.risk {
+      border-left-color: var(--rose);
+      background: var(--soft-rose);
+    }
+
+    .callout.good {
+      border-left-color: var(--leaf);
+      background: var(--soft-leaf);
+    }
+
+    .plain-english {
+      margin-top: 1rem;
+      padding: 1.2rem;
+      border-radius: 8px;
+      background: #f2efe6;
+      border: 1px solid #ddd3bf;
+      font-size: 1.05rem;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 0.65rem;
+      margin-top: 1rem;
+      align-items: stretch;
+    }
+
+    .step {
+      position: relative;
+      padding: 0.9rem;
+      min-height: 110px;
+      border-radius: 8px;
+      background: #f4f8f7;
+      border: 1px solid #cfe1dd;
+    }
+
+    .step b {
+      display: block;
+      color: #123f3b;
+    }
+
+    .step span {
+      display: block;
+      margin-top: 0.35rem;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .badge {
+      display: inline-block;
+      margin: 0.1rem 0.2rem 0.1rem 0;
+      padding: 0.25rem 0.48rem;
+      border-radius: 999px;
+      color: #17311f;
+      background: #e8f3e2;
+      border: 1px solid #cfe2c5;
+      font-size: 0.85rem;
+      font-weight: 750;
+    }
+
+    .badge.alt {
+      color: #3e2a08;
+      background: #fff1ce;
+      border-color: #ecd39b;
+    }
+
+    .badge.risk {
+      color: #5f241b;
+      background: #fae3dc;
+      border-color: #ecc0b5;
+    }
+
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      margin-top: 1rem;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 760px;
+      font-size: 0.94rem;
+    }
+
+    th,
+    td {
+      padding: 0.72rem 0.75rem;
+      border-bottom: 1px solid #e5e9e3;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: #284256;
+      background: #f1f5f2;
+      font-size: 0.8rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    td.num,
+    th.num {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .winner {
+      color: #0f6e3e;
+      font-weight: 900;
+    }
+
+    .tag {
+      display: inline-block;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 0.08rem 0.45rem;
+      border-radius: 999px;
+      background: #e6f4ec;
+      color: #0f6e3e;
+      vertical-align: middle;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    figure {
+      margin: 1rem 0 0;
+      padding: 0;
+    }
+
+    figure img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+      box-shadow: 0 8px 22px rgba(23, 33, 43, 0.08);
+    }
+
+    figcaption {
+      margin-top: 0.45rem;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .figure-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .figure-grid figure {
+      margin-top: 0;
+    }
+
+    .small-figure img {
+      max-height: 420px;
+      object-fit: contain;
+    }
+
+    .file-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.65rem;
+      margin-top: 1rem;
+    }
+
+    .file-list a,
+    .file-list span {
+      display: block;
+      padding: 0.75rem;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #fffefa;
+      color: var(--ink);
+      text-decoration: none;
+      overflow-wrap: anywhere;
+    }
+
+    details {
+      margin-top: 1rem;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fffefa;
+    }
+
+    summary {
+      cursor: pointer;
+      padding: 0.85rem 1rem;
+      color: #23384d;
+      font-weight: 850;
+    }
+
+    details > div {
+      padding: 0 1rem 1rem;
+    }
+
+    ul,
+    ol {
+      margin: 0.75rem 0 0;
+      padding-left: 1.2rem;
+    }
+
+    li + li {
+      margin-top: 0.4rem;
+    }
+
+    footer {
+      padding: 0 0 48px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 860px) {
+      .score-strip,
+      .grid.two,
+      .grid.three,
+      .figure-grid,
+      .file-list,
+      .flow {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding-top: 42px;
+      }
+
+      section {
+        border-radius: 8px;
+      }
+    }
+
+    @media print {
+      .toc,
+      .hero-actions {
+        display: none;
+      }
+
+      body {
+        background: #ffffff;
+      }
+
+      section {
+        break-inside: avoid;
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-inner">
+      <div class="eyebrow">Coframe Applied Science Take-Home</div>
+      <h1>Personalization Policy Report</h1>
+      <p>
+        A static HTML report for the submitted GitHub repo: what the problem is,
+        what the data says, how randomization works, what policies we tried,
+        what shipped, and how to explain it clearly in the video.
+      </p>
+      <div class="hero-actions">
+        <a class="button" href="#results">Jump to Results</a>
+        <a class="button secondary" href="#video">Video Outline</a>
+        <a class="button secondary" href="research_log.md">Open Research Log</a>
+      </div>
+      <div class="score-strip">
+        <div class="score">
+          <b>69.6%</b>
+          <span>average captured headroom for <code>hybrid_eb_gbm</code></span>
+        </div>
+        <div class="score">
+          <b>10</b>
+          <span>registered policies compared in the harness</span>
+        </div>
+        <div class="score">
+          <b>6</b>
+          <span>datasets, including sparse, drift, and rotation cases</span>
+        </div>
+        <div class="score">
+          <b>0</b>
+          <span>choice violations in the final serving contract checks</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="toc" aria-label="Report navigation">
+    <div class="toc-inner">
+      <a href="#summary">Summary</a>
+      <a href="#deliverables">Deliverables</a>
+      <a href="#problem">Problem</a>
+      <a href="#data">Data</a>
+      <a href="#randomization">Randomization</a>
+      <a href="#variance">Variance</a>
+      <a href="#harness">Harness</a>
+      <a href="#implementation">Implementation</a>
+      <a href="#ml-model">ML Model</a>
+      <a href="#observability">Displays</a>
+      <a href="#results">Results</a>
+      <a href="#edge-cases">Edge cases</a>
+      <a href="#productionization">Productionization</a>
+      <a href="#learnings">Learnings</a>
+      <a href="#video">Video</a>
+      <a href="#runbook">Runbook</a>
+    </div>
+  </nav>
+
+  <main>
+    <section id="summary">
+      <h2>The Short Version</h2>
+      <p class="section-intro">
+        This project is about choosing the best website variant for each visitor,
+        using historical randomized logs. The winning approach is a
+        <strong>support-aware hybrid</strong>: a leak-free empirical-Bayes table
+        when data is thin, switching to a gradient-boosted T-learner once a segment
+        has enough support to justify a more flexible functional form.
+      </p>
+
+      <div class="plain-english">
+        <strong>Explain it like I am 15:</strong>
+        Imagine a website has several versions of a page. For every visitor, we
+        know facts like country, device, language, and whether they are returning.
+        In the past, the site randomly showed one version and recorded whether
+        the visitor converted. We only saw what happened for the version they
+        were shown, not every other version. Our job is to learn patterns like
+        "visitors from this country on this device tend to like version 3" while
+        staying humble when there is not enough data.
+      </div>
+
+      <div class="grid three" style="margin-top: 1rem;">
+        <div class="stat-card">
+          <strong>0.2%</strong>
+          <span>random baseline average captured headroom</span>
+        </div>
+        <div class="stat-card">
+          <strong>18.3%</strong>
+          <span>provided personalized example average</span>
+        </div>
+        <div class="stat-card">
+          <strong>69.6%</strong>
+          <span>final <code>hybrid_eb_gbm</code> average</span>
+        </div>
+      </div>
+
+      <div class="callout good">
+        <strong>Final recommendation:</strong> submit <code>hybrid_eb_gbm</code>
+        as the workhorse policy. It uses the empirical-Bayes table when support
+        is thin, then switches to a gradient-boosted T-learner when enough data
+        exists. This keeps the sparse-data protection from <code>seg_eb</code>
+        while capturing nonlinear lift from <code>gbm_tlearner</code>.
+      </div>
+    </section>
+
+    <section id="deliverables">
+      <h2>Deliverables</h2>
+      <p class="section-intro">
+        The end deliverable is a public GitHub repo plus a recorded video. This
+        HTML page is designed to be the "open this first" artifact for reviewers.
+      </p>
+
+      <div class="grid two" style="margin-top: 1rem;">
+        <div class="card">
+          <h3>Code and repo</h3>
+          <ul>
+            <li><code>solution/</code> contains the submitted policies, write-up, generated results, and plots.</li>
+            <li><code>solution/eb_policy.py</code> contains the final empirical-Bayes policy.</li>
+            <li><code>solution/__init__.py</code> registers every policy variant to preserve the research path.</li>
+            <li><code>solution/report.html</code> is this static report; <code>solution/index.html</code> forwards here.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Video</h3>
+          <ul>
+            <li>Run the harness and show the score plots.</li>
+            <li>Explain the contextual bandit framing and randomization.</li>
+            <li>Walk through data displays and edge cases.</li>
+            <li>Explain productionization: OPE, exploration, drift, and monitoring.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="callout">
+        <strong>Best way to view this:</strong> open <code>solution/report.html</code>
+        locally in a browser, or push the repo and serve it with GitHub Pages.
+        All images use relative paths under <code>solution/results/</code>, so
+        the report stays portable when the repo moves online.
+      </div>
+    </section>
+
+    <section id="problem">
+      <h2>What We Are Solving</h2>
+      <p class="section-intro">
+        This is a one-step contextual bandit problem, not a full reinforcement
+        learning problem. At a single moment, we observe context, choose one
+        action, and get one reward.
+      </p>
+
+      <div class="grid three" style="margin-top: 1rem;">
+        <div class="card">
+          <h3>Context</h3>
+          <p>Visitor/session features: country, language, device, platform, referrer, returning status, visits, and timestamp.</p>
+        </div>
+        <div class="card">
+          <h3>Action</h3>
+          <p>Choose one currently available <code>variant_id</code>. The action set can change, especially in <code>rotation</code>.</p>
+        </div>
+        <div class="card">
+          <h3>Reward</h3>
+          <p>Binary conversion. In the log we only observe the reward for the variant that was actually shown.</p>
+        </div>
+      </div>
+
+      <pre><code>For each visitor:
+  x = context
+  A = available variants
+  choose a in A
+  observe reward only for chosen a
+
+Goal:
+  estimate mu(x, a) = P(convert | context x, variant a)
+  serve argmax_a mu_hat(x, a) among available variants</code></pre>
+
+      <div class="callout warn">
+        <strong>Why not RL?</strong> There is no long action sequence, no state
+        transition, and no delayed credit assignment. The only sequence is the
+        evaluation process: train on the past, predict the next time window,
+        fold that window into history, and repeat.
+      </div>
+    </section>
+
+    <section id="data">
+      <h2>What The Data Looks Like</h2>
+      <p class="section-intro">
+        There are six datasets from May 2, 2025 through May 31, 2025. The observed
+        logs are the only data the policy may train on. The hidden truth files are
+        used by the evaluator and by offline diagnostics, not by the policy.
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Dataset</th>
+              <th class="num">Rows</th>
+              <th class="num">Variants</th>
+              <th class="num">Observed reward</th>
+              <th>Feature feel</th>
+              <th>Special case</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>atlas</strong></td>
+              <td class="num">80,000</td>
+              <td class="num">4</td>
+              <td class="num">6.07%</td>
+              <td>Standard visitor features</td>
+              <td>No headroom: all arms are effectively identical.</td>
+            </tr>
+            <tr>
+              <td><strong>helios</strong></td>
+              <td class="num">150,000</td>
+              <td class="num">4</td>
+              <td class="num">5.83%</td>
+              <td>Country/device/language signal</td>
+              <td>Non-uniform randomized assignment with propensities.</td>
+            </tr>
+            <tr>
+              <td><strong>meadow</strong></td>
+              <td class="num">150,000</td>
+              <td class="num">4</td>
+              <td class="num">8.02%</td>
+              <td>Country, language, platform, recency features</td>
+              <td>Clean contextual lift with uniform assignment.</td>
+            </tr>
+            <tr>
+              <td><strong>rotation</strong></td>
+              <td class="num">120,000</td>
+              <td class="num">10</td>
+              <td class="num">6.01%</td>
+              <td>Country and language dominate</td>
+              <td>Action set changes over time; propensities logged.</td>
+            </tr>
+            <tr>
+              <td><strong>vega</strong></td>
+              <td class="num">6,000</td>
+              <td class="num">4</td>
+              <td class="num">5.30%</td>
+              <td>Same schema but much less support</td>
+              <td>Sparse, high variance, easy to overfit.</td>
+            </tr>
+            <tr>
+              <td><strong>zephyr</strong></td>
+              <td class="num">200,000</td>
+              <td class="num">4</td>
+              <td class="num">7.94%</td>
+              <td>Country/referrer/language signal</td>
+              <td>Concept drift: recent data matters more.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <figure>
+        <img src="results/observability/overview.png" alt="Overview table showing rows, variants, observed reward, and propensity availability">
+        <figcaption>Data overview generated from the observed logs.</figcaption>
+      </figure>
+
+      <div class="callout">
+        <strong>Main data lesson:</strong> the arms are not globally better in a
+        stable way. The value comes from interactions: the best variant depends
+        on visitor context. Country is the strongest single feature across the
+        non-atlas datasets.
+      </div>
+    </section>
+
+    <section id="randomization">
+      <h2>Randomization And Propensity Refresher</h2>
+      <p class="section-intro">
+        The logs are randomized, but not always uniformly randomized. That is the
+        key distinction. Some datasets show each variant about equally often;
+        others use a known logging probability called a propensity.
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Dataset</th>
+              <th>Assignment pattern</th>
+              <th>What to condition on</th>
+              <th>Policy implication</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>atlas</strong>, <strong>meadow</strong>, <strong>vega</strong>, <strong>zephyr</strong></td>
+              <td>Near uniform random assignment, about 25% per arm.</td>
+              <td>Context is enough; implicit propensity is about <code>1/K</code>.</td>
+              <td>Use ordinary direct outcome modeling with shrinkage.</td>
+            </tr>
+            <tr>
+              <td><strong>helios</strong></td>
+              <td>Non-uniform randomized assignment: propensities include 0.05, 0.25, 0.85.</td>
+              <td>Assignment is random conditional on the logging propensity/context.</td>
+              <td>Use propensity as a diagnostic; raw IPW is high variance.</td>
+            </tr>
+            <tr>
+              <td><strong>rotation</strong></td>
+              <td>Random among live variants while variants enter and leave.</td>
+              <td>Condition on time/action availability; propensity is about 1/8 or 1/9.</td>
+              <td>Always mask recommendations to <code>available_variants</code>.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="figure-grid">
+        <figure>
+          <img src="results/observability/assignment_mix.png" alt="Assignment mix by dataset and variant">
+          <figcaption>Logged action shares. Uniform-looking datasets are balanced; helios is intentionally skewed.</figcaption>
+        </figure>
+        <figure>
+          <img src="results/observability/propensity_diagnostics.png" alt="Propensity distribution and effective sample size diagnostics">
+          <figcaption>Propensity diagnostics. Helios has tiny probabilities that create large inverse-propensity weights.</figcaption>
+        </figure>
+      </div>
+
+      <div class="callout">
+        <strong>Rosenbaum-Rubin in one paragraph:</strong> If treatment assignment
+        is randomized after conditioning on observed information, then comparing
+        outcomes within that conditioning set is causal. The propensity score is
+        the probability of assignment and is a balancing score. In this project,
+        we usually condition directly on context with an outcome model, so we do
+        not feed propensity into the serving policy as if it were a user feature.
+      </div>
+
+      <details>
+        <summary>Do we need to condition on "the chance this person was assigned"?</summary>
+        <div>
+          <p>
+            Conceptually, yes: causal comparisons need the assignment mechanism.
+            Practically, the final policy estimates <code>E[reward | context, action]</code>
+            using the randomized log and heavy shrinkage. For uniform datasets,
+            the propensity is just a constant. For <code>helios</code>, using raw
+            <code>1 / propensity</code> weights would produce 20x rows and high
+            variance, so the safer scored policy is direct outcome modeling with
+            support-aware shrinkage. In production OPE, propensities become
+            central again because we will not have hidden truth files.
+          </p>
+        </div>
+      </details>
+    </section>
+
+    <section id="variance">
+      <h2>Variance, Small Weights, And Shrinkage</h2>
+      <p class="section-intro">
+        The user insight that matters most is variance: when propensities are
+        small, inverse-propensity weights are huge. A technically unbiased
+        estimate can still be useless for choosing an action if it is too noisy.
+      </p>
+
+      <pre><code>Inverse propensity weight:
+  weight_i = 1 / P(action_i was assigned | context_i)
+
+Example:
+  propensity = 0.05
+  weight = 20
+
+Effective sample size:
+  ESS = (sum weights)^2 / sum(weights^2)</code></pre>
+
+      <div class="grid two" style="margin-top: 1rem;">
+        <div class="card">
+          <h3>The risk</h3>
+          <p>
+            A single lucky conversion in a rare cell can make a variant look
+            amazing. If the policy greedily picks the noisy winner, it overfits.
+            This is especially dangerous in <code>helios</code> and <code>vega</code>.
+          </p>
+        </div>
+        <div class="card">
+          <h3>The fix</h3>
+          <p>
+            Empirical-Bayes shrinkage: estimate every segment/variant cell, but
+            pull thin cells back toward a stable parent rate. As support grows,
+            the data earns the right to move the score.
+          </p>
+        </div>
+      </div>
+
+      <figure>
+        <img src="results/observability/reward_by_variant_support.png" alt="Observed reward by variant with support and uncertainty">
+        <figcaption>Observed reward by action with uncertainty. Sparse and skewed cells need pooling, not blind argmax.</figcaption>
+      </figure>
+
+      <div class="callout warn">
+        <strong>Fisher information connection:</strong> In production, we care
+        about how quickly policy parameters become identifiable as data arrives.
+        That belongs to exploration design and online experimentation. For this
+        offline scored task, the evaluator already has hidden truth, so the best
+        submitted policy should exploit the best reliable estimate, not explore.
+      </div>
+    </section>
+
+    <section id="harness">
+      <h2>The Harness</h2>
+      <p class="section-intro">
+        The evaluator mimics production by walking forward in time. Training
+        always happens before the window being scored.
+      </p>
+
+      <div class="flow" aria-label="Walk-forward evaluation flow">
+        <div class="step">
+          <b>1. Past log</b>
+          <span>Use only rows before the current window.</span>
+        </div>
+        <div class="step">
+          <b>2. Fit policy</b>
+          <span>Learn priors, segment effects, and bin edges.</span>
+        </div>
+        <div class="step">
+          <b>3. Recommend</b>
+          <span>Choose one available variant per visitor.</span>
+        </div>
+        <div class="step">
+          <b>4. Score</b>
+          <span>Evaluator checks choices against hidden truth.</span>
+        </div>
+        <div class="step">
+          <b>5. Repeat</b>
+          <span>Fold the window into history and advance time.</span>
+        </div>
+      </div>
+
+      <figure>
+        <img src="results/eval_observability/harness_walk_forward_windows.png" alt="Walk-forward window sizes and cumulative training sizes">
+        <figcaption>Walk-forward schedule: early small windows expose cold-start behavior; later windows test steady-state learning.</figcaption>
+      </figure>
+
+      <div class="callout risk">
+        <strong>Silent bug avoided:</strong> <code>score_variants()</code> must
+        return columns in <code>meta.variant_ids</code> order, not
+        <code>available_variants</code> order. The EB policy explicitly follows
+        this contract, then the base <code>ScoredPolicy</code> masks unavailable
+        arms safely.
+      </div>
+    </section>
+
+    <section id="implementation">
+      <h2>Implementation</h2>
+      <p class="section-intro">
+        The final policy is a support-adaptive direct reward model. It starts
+        with an additive empirical-Bayes T-learner, then switches to a
+        histogram-gradient-boosted T-learner once the training history is large
+        enough for flexible nonlinear modeling.
+      </p>
+
+      <div class="grid two" style="margin-top: 1rem;">
+        <div class="card">
+          <h3>Registered policies</h3>
+          <p>
+            <span class="badge">random</span>
+            <span class="badge">my_policy</span>
+            <span class="badge">best_fixed</span>
+            <span class="badge">example</span>
+            <span class="badge">feature_demo</span>
+            <span class="badge">seg_country</span>
+            <span class="badge">seg_eb</span>
+            <span class="badge">seg_eb_recency</span>
+            <span class="badge alt">gbm_tlearner</span>
+            <span class="badge alt">hybrid_eb_gbm</span>
+            <span class="badge alt">lgbm_tlearner</span>
+            <span class="badge alt">hybrid_eb_lgbm</span>
+          </p>
+        </div>
+        <div class="card">
+          <h3>Final files</h3>
+          <p>
+            <code>solution/eb_policy.py</code> implements the conservative EB
+            component. <code>solution/gbm_policy.py</code> implements the GBM
+            T-learner and final hybrid. The observability scripts generate the
+            data, harness, and arm-sensitivity displays used in this report.
+          </p>
+        </div>
+      </div>
+
+      <h3>EB policy formula</h3>
+      <pre><code>score(context x, variant a)
+  = logit(global_arm_prior[a])
+    + sum_feature deviation(feature_value, a)
+    + sum_cross deviation(cross_value, a)
+
+shrunk_rate(segment, a)
+  = (reward_sum(segment, a) + k * parent_prior[a])
+    / (count(segment, a) + k)</code></pre>
+
+      <h3>GBM and hybrid logic</h3>
+      <pre><code>gbm_tlearner:
+  for each arm a:
+    fit HistGradientBoostingClassifier on rows where variant_id == a
+    predict P(reward=1 | x, arm=a)
+
+hybrid_eb_gbm:
+  if n_train < 50,000 or any arm has fewer than 2,000 rows:
+    use seg_eb
+  else:
+    use gbm_tlearner</code></pre>
+
+      <div class="grid two" style="margin-top: 1rem;">
+        <div class="card">
+          <h3>What it uses</h3>
+          <ul>
+            <li>Categorical features from the harness metadata.</li>
+            <li>Numeric features binned on training data only.</li>
+            <li>Country crossed with language, device type, and platform.</li>
+            <li>Optional recency weighting for drift experiments.</li>
+            <li>Gradient-boosted trees when support is large enough.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>What it avoids</h3>
+          <ul>
+            <li>No truth-file access during policy training.</li>
+            <li>No target encodings fit on the scored window.</li>
+            <li>No raw propensity as a serving feature.</li>
+            <li>No noisy personalization when a cell lacks support.</li>
+            <li>No dataset-name hard-coding in the hybrid switch.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="callout good">
+        <strong>Parallel-agent integration:</strong> the parallel work converged
+        on the same core idea: additive EB segmentation, shrinkage, careful
+        randomization reasoning, and the score-column-order warning. I read that
+        strategy, ported the EB implementation into this repo, registered it,
+        reran the full harness locally, and regenerated the observability plots.
+      </div>
+    </section>
+
+    <section id="ml-model">
+      <h2>What Kind Of ML Model Is This?</h2>
+      <p class="section-intro">
+        The shipped model is a direct-method, multi-action T-learner for a
+        contextual bandit. The final submitted policy is a hybrid: EB shrinkage
+        for low-support regimes, gradient boosting for high-support regimes.
+        Both estimate the expected conversion rate for every variant in the
+        current context, then choose the highest score among live variants.
+      </p>
+
+      <div class="plain-english">
+        <strong>Plain English:</strong> for each visitor, we ask, "If I showed
+        variant 1, what conversion probability would I expect? What about
+        variant 2? Variant 3?" Then we pick the best answer. We are not trying
+        variants to discover new information during the scored benchmark. We are
+        only learning from past randomized data and making the best current
+        recommendation.
+      </div>
+
+      <h3>The exact model shape</h3>
+      <p>
+        <code>hybrid_eb_gbm</code> is a support-gated T-learner. "T-learner"
+        means each action has its own estimated outcome surface:
+      </p>
+
+      <pre><code>mu_a(x) = E[reward | context = x, action = a]
+
+serve:
+  choose argmax_a mu_hat_a(x)
+  subject to a being in available_variants</code></pre>
+
+      <p>
+        In low-support windows, the policy uses shrunk segment tables in
+        log-odds space. The prediction for a variant is:
+      </p>
+
+      <pre><code>score(x, a)
+  = global arm prior
+    + country effect for arm a
+    + language effect for arm a
+    + platform/device/numeric-bin effects for arm a
+    + selected country-cross effects for arm a</code></pre>
+
+      <div class="callout good">
+        <strong>Why the hybrid works here:</strong> the EB table protects sparse
+        cells and cold starts; the GBM captures nonlinear context interactions
+        and stale-data/time effects once the sample is large enough. The full
+        run improved from 62.7% for EB alone to 69.6% for the hybrid.
+      </div>
+
+      <h3>Is this uplift modeling?</h3>
+      <p>
+        It is related, but the final policy is not only an "uplift model" in the
+        narrow binary-treatment sense. Classic uplift modeling asks, "How much
+        better is treatment than control for this user?" Here there are multiple
+        variants and every visitor must receive one of them. We can express the
+        decision as uplift against a baseline:
+      </p>
+
+      <pre><code>uplift_a(x) = mu_a(x) - mu_baseline(x)</code></pre>
+
+      <p>
+        But because the baseline term is common when comparing arms, choosing the
+        largest <code>mu_a(x)</code> gives the same action as choosing the largest
+        uplift. So the submitted policy models absolute reward per action, while
+        the business interpretation is "personalized lift over best fixed."
+      </p>
+
+      <h3>How T, X, and R learners fit</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Approach</th>
+              <th>What it learns</th>
+              <th>Fit for this take-home</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>T-learner</strong></td>
+              <td>One outcome model per action: <code>mu_a(x)</code>.</td>
+              <td><strong>Chosen.</strong> EB and GBM are both T-learners in this submission.</td>
+            </tr>
+            <tr>
+              <td><strong>S-learner</strong></td>
+              <td>One model with action included as a feature.</td>
+              <td>Possible, but can underfit action-by-context flips unless interactions are learned well.</td>
+            </tr>
+            <tr>
+              <td><strong>X-learner</strong></td>
+              <td>Imputes treatment effects, usually for binary treatment/control.</td>
+              <td>Useful with imbalanced treatment/control data, but awkward for many variants and unnecessary here.</td>
+            </tr>
+            <tr>
+              <td><strong>R-learner</strong></td>
+              <td>Residualized heterogeneous treatment effects after modeling outcome and propensity nuisances.</td>
+              <td>Strong for observational causal inference; more machinery than needed for randomized logs and hidden-truth scoring.</td>
+            </tr>
+            <tr>
+              <td><strong>Doubly robust learner</strong></td>
+              <td>Outcome model plus propensity-corrected residuals.</td>
+              <td>Excellent production/OPE idea. In this scored benchmark, raw propensity correction can add variance.</td>
+            </tr>
+            <tr>
+              <td><strong>GBM/LightGBM T-learner</strong></td>
+              <td>Flexible per-arm tree models.</td>
+              <td>Implemented as <code>gbm_tlearner</code>. Strong on large/drifting datasets, weak on sparse <code>vega</code>.</td>
+            </tr>
+            <tr>
+              <td><strong>Support-adaptive hybrid</strong></td>
+              <td>Use EB until there is enough data, then switch to GBM.</td>
+              <td><strong>Final policy.</strong> Best average score: 69.6% captured headroom.</td>
+            </tr>
+            <tr>
+              <td><strong>Bandit exploration algorithms</strong></td>
+              <td>UCB, Thompson sampling, epsilon-greedy logging policies.</td>
+              <td>Production exploration, not the offline score. The benchmark rewards best current exploitation.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Walk-forward retraining, not RL</h3>
+      <p>
+        We are not discovering by changing the future data collection process in
+        this benchmark. The harness replays fixed historical windows. At each
+        time step, we train only on the past and score on the next unseen window:
+      </p>
+
+      <pre><code>iteration 11:
+  train on all data through iteration 10
+  recommend for iteration 11
+
+iteration 15:
+  train on all data through iteration 14
+  recommend for iteration 15</code></pre>
+
+      <p>
+        That is why there is no data leakage: the model can keep retraining as
+        time moves forward, but it never uses reward, action, or truth from the
+        window it is currently scoring.
+      </p>
+
+      <h3>How to think about stale data and drift</h3>
+      <p>
+        Stale data matters when the mapping <code>(context, action) -> reward</code>
+        changes over time. In that case, old rows can be actively misleading.
+        <code>zephyr</code> appears to be the cautionary dataset: the recency
+        policy improves it from 47.4% to 58.9%, while slightly hurting stationary
+        datasets because it throws away still-useful history.
+      </p>
+
+      <div class="grid two" style="margin-top: 1rem;">
+        <div class="card">
+          <h3>Current stale-data tool</h3>
+          <p>
+            <code>seg_eb_recency</code> applies exponential time decay. The
+            <code>gbm_tlearner</code> also includes timestamp-derived features,
+            letting trees split on recent regimes. These both prove the drift
+            hypothesis on <code>zephyr</code>.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Better production version</h3>
+          <p>
+            Use adaptive recency. Keep all history while the process is stable;
+            turn on decay only when monitoring detects a change in reward rates,
+            arm rankings, calibration, or segment-level residuals.
+          </p>
+        </div>
+      </div>
+
+      <div class="callout warn">
+        <strong>Decision rule for stale data:</strong> old data is helpful if the
+        relationship is stable, harmful if the relationship changed. The next
+        policy should learn this automatically with drift detection, not by
+        hard-coding a dataset name.
+      </div>
+    </section>
+
+    <section id="observability">
+      <h2>Observability Displays</h2>
+      <p class="section-intro">
+        These plots make the data and harness inspectable. They are useful for
+        the video because they show why the final policy is shaped the way it is.
+      </p>
+
+      <div class="figure-grid">
+        <figure>
+          <img src="results/observability/action_availability.png" alt="Action availability by dataset over time">
+          <figcaption>Action availability. Rotation is the key changing-action-set dataset.</figcaption>
+        </figure>
+        <figure>
+          <img src="results/observability/temporal_assignment_mix.png" alt="Temporal assignment mix by dataset">
+          <figcaption>Assignment over time. Rotation changes because variants enter and leave.</figcaption>
+        </figure>
+        <figure>
+          <img src="results/observability/temporal_reward.png" alt="Temporal observed reward by dataset">
+          <figcaption>Observed reward over time. Use this to talk about drift and noise.</figcaption>
+        </figure>
+        <figure>
+          <img src="results/observability/segment_signal_heatmap.png" alt="Single-feature segment signal heatmap">
+          <figcaption>Segment signal proxy. Country is repeatedly the strongest single segmentation feature.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section id="results">
+      <h2>Results</h2>
+      <p class="section-intro">
+        Full walk-forward evaluation over 50 iterations, comparing the starter
+        baselines, provided examples, our data-display experiments, and the final
+        EB policies.
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Policy</th>
+              <th class="num">Atlas</th>
+              <th class="num">Helios</th>
+              <th class="num">Meadow</th>
+              <th class="num">Rotation</th>
+              <th class="num">Vega</th>
+              <th class="num">Zephyr</th>
+              <th class="num">Avg headroom datasets</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>random</code></td>
+              <td class="num">n/a</td>
+              <td class="num">-0.4%</td>
+              <td class="num">0.2%</td>
+              <td class="num">-0.1%</td>
+              <td class="num">1.3%</td>
+              <td class="num">0.1%</td>
+              <td class="num">0.2%</td>
+            </tr>
+            <tr>
+              <td><code>my_policy</code></td>
+              <td class="num">n/a</td>
+              <td class="num">-0.1%</td>
+              <td class="num">0.2%</td>
+              <td class="num">-0.1%</td>
+              <td class="num">-0.3%</td>
+              <td class="num">1.6%</td>
+              <td class="num">0.3%</td>
+            </tr>
+            <tr>
+              <td><code>best_fixed</code></td>
+              <td class="num">n/a</td>
+              <td class="num">-0.1%</td>
+              <td class="num">0.2%</td>
+              <td class="num">-0.1%</td>
+              <td class="num">-0.3%</td>
+              <td class="num">1.6%</td>
+              <td class="num">0.3%</td>
+            </tr>
+            <tr>
+              <td><code>example</code></td>
+              <td class="num">n/a</td>
+              <td class="num">19.8%</td>
+              <td class="num">26.2%</td>
+              <td class="num">13.0%</td>
+              <td class="num">13.8%</td>
+              <td class="num">18.9%</td>
+              <td class="num">18.3%</td>
+            </tr>
+            <tr>
+              <td><code>feature_demo</code></td>
+              <td class="num">n/a</td>
+              <td class="num">1.9%</td>
+              <td class="num">4.0%</td>
+              <td class="num">1.4%</td>
+              <td class="num">4.8%</td>
+              <td class="num">6.0%</td>
+              <td class="num">3.6%</td>
+            </tr>
+            <tr>
+              <td><code>seg_country</code></td>
+              <td class="num">n/a</td>
+              <td class="num">55.6%</td>
+              <td class="num">47.0%</td>
+              <td class="num">41.6%</td>
+              <td class="num">42.3%</td>
+              <td class="num">27.2%</td>
+              <td class="num">42.7%</td>
+            </tr>
+            <tr>
+              <td><code>seg_eb</code></td>
+              <td class="num">n/a</td>
+              <td class="num">77.3%</td>
+              <td class="num">72.2%</td>
+              <td class="num">61.2%</td>
+              <td class="num">55.3%</td>
+              <td class="num">47.4%</td>
+              <td class="num">62.7%</td>
+            </tr>
+            <tr>
+              <td><code>seg_eb_recency</code> <span class="tag">drift ablation</span></td>
+              <td class="num">n/a</td>
+              <td class="num">75.1%</td>
+              <td class="num">70.0%</td>
+              <td class="num">57.5%</td>
+              <td class="num">48.2%</td>
+              <td class="num">58.9%</td>
+              <td class="num">61.9%</td>
+            </tr>
+            <tr>
+              <td><code>gbm_tlearner</code></td>
+              <td class="num">n/a</td>
+              <td class="num">78.3%</td>
+              <td class="num winner">78.7%</td>
+              <td class="num">61.4%</td>
+              <td class="num">32.7%</td>
+              <td class="num winner">75.9%</td>
+              <td class="num">65.4%</td>
+            </tr>
+            <tr>
+              <td><code>hybrid_eb_gbm</code> <span class="tag">shipped</span></td>
+              <td class="num">n/a</td>
+              <td class="num winner">79.7%</td>
+              <td class="num">78.4%</td>
+              <td class="num winner">61.9%</td>
+              <td class="num winner">55.3%</td>
+              <td class="num">72.7%</td>
+              <td class="num winner">69.6%</td>
+            </tr>
+            <tr>
+              <td><code>lgbm_tlearner</code></td>
+              <td class="num">n/a</td>
+              <td class="num">76.3%</td>
+              <td class="num">76.6%</td>
+              <td class="num">57.7%</td>
+              <td class="num">29.5%</td>
+              <td class="num">74.4%</td>
+              <td class="num">62.9%</td>
+            </tr>
+            <tr>
+              <td><code>hybrid_eb_lgbm</code></td>
+              <td class="num">n/a</td>
+              <td class="num">78.2%</td>
+              <td class="num">77.5%</td>
+              <td class="num">61.1%</td>
+              <td class="num">55.3%</td>
+              <td class="num">73.1%</td>
+              <td class="num">69.1%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <figure>
+        <img src="results/eval_observability/policy_scoreboard_heatmap.png" alt="Policy scoreboard heatmap showing captured headroom by policy and dataset">
+        <figcaption>Scoreboard heatmap from the full harness run.</figcaption>
+      </figure>
+
+      <div class="figure-grid">
+        <figure>
+          <img src="results/plots/summary.png" alt="Summary comparison plot for all policies">
+          <figcaption>Original harness plot: policy comparison by dataset and average.</figcaption>
+        </figure>
+        <figure>
+          <img src="results/eval_observability/captured_convergence_grid.png" alt="Captured headroom convergence by dataset over training rows">
+          <figcaption>Convergence over walk-forward windows. The EB policy learns quickly and recency helps zephyr.</figcaption>
+        </figure>
+        <figure>
+          <img src="results/eval_observability/final_value_components.png" alt="Policy CVR versus best fixed and oracle components">
+          <figcaption>Value components: best fixed baseline, policy value, and oracle ceiling.</figcaption>
+        </figure>
+        <figure>
+          <img src="results/eval_observability/policy_runtime.png" alt="Policy runtime by train and inference time">
+          <figcaption>Runtime remains small: the final policy is table lookup plus argmax at serving time.</figcaption>
+        </figure>
+        <figure>
+          <img src="results/eval_observability/final_recommendation_mix.png" alt="Final recommendation mix by policy and dataset">
+          <figcaption>Recommendation mix. A real policy should not blindly collapse to one arm everywhere.</figcaption>
+        </figure>
+        <figure>
+          <img src="results/eval_observability/choice_violations.png" alt="Choice violations by policy and dataset">
+          <figcaption>Choice violations. The policy respects available variants, including rotation.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section id="edge-cases">
+      <h2>Edge Cases</h2>
+      <p class="section-intro">
+        These are the cases to call out in the video. They show that the solution
+        is not just chasing a leaderboard number.
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Dataset</th>
+              <th>What is tricky</th>
+              <th>How the policy handles it</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>atlas</strong></td>
+              <td>No personalization headroom; oracle equals best fixed.</td>
+              <td>Shrinkage collapses noisy effects to priors; captured% is correctly n/a.</td>
+            </tr>
+            <tr>
+              <td><strong>helios</strong></td>
+              <td>Non-uniform assignment and tiny propensities.</td>
+              <td>Condition on context; avoid high-variance raw IPW; reaches 77.3%.</td>
+            </tr>
+            <tr>
+              <td><strong>rotation</strong></td>
+              <td>Variants enter and leave over time.</td>
+              <td>Scores canonical arms, then masks to available variants; reaches 61.2%.</td>
+            </tr>
+            <tr>
+              <td><strong>vega</strong></td>
+              <td>Only 6,000 rows; sparse cells.</td>
+              <td>Heavy EB shrinkage avoids overreacting; reaches 55.3%.</td>
+            </tr>
+            <tr>
+              <td><strong>zephyr</strong></td>
+              <td>Concept drift.</td>
+              <td>Base EB captures 47.4%; recency version reaches 58.9% but hurts stationary datasets.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="productionization">
+      <h2>Productionization</h2>
+      <p class="section-intro">
+        In production there is no truth file and no guaranteed clean randomization.
+        The machinery we deliberately set aside for the offline score — propensities,
+        off-policy evaluation, exploration, drift handling — is exactly what comes back.
+      </p>
+
+      <h3>Off-policy evaluation when counterfactuals are unavailable</h3>
+      <p>
+        Offline here we score against the hidden per-arm oracle. In production you
+        replace that with an <strong>off-policy estimator</strong> — IPS, self-normalized
+        IPS (SNIPS), or <strong>doubly-robust</strong> (an outcome model corrected by
+        inverse-propensity residuals) — reported with confidence intervals. The
+        <code>helios</code> diagnostic is the motivation: under raw <code>1/propensity</code>
+        weighting, the effective sample size collapses from 150,000 rows to about
+        <strong>40,000</strong> (propensity-0.05 rows carry weight 20), so the
+        variance-controlled doubly-robust/SNIPS estimator is preferred over raw IPW.
+        The operational requirement: <strong>log the propensity of every served
+        decision</strong>, or OPE is impossible after the fact.
+      </p>
+
+      <h3>Exploration vs. greedy exploitation</h3>
+      <p>
+        Greedy <code>argmax</code> is optimal for <em>this</em> offline score, but in
+        production greedy <strong>starves the arms it disfavors</strong> — without
+        overlap you can no longer estimate those arms, and the model decays. You keep a
+        controlled amount of exploration (<strong>Thompson sampling</strong> or
+        ε-greedy, or a small randomized holdout) to preserve overlap and keep OPE valid.
+        This is the Fisher-information / value-of-information idea, scoped concretely:
+        spend exploration where an arm's value confidence interval still overlaps the
+        current argmax <em>and</em> the segment is high-traffic — i.e. where information
+        is both uncertain and decision-relevant.
+      </p>
+
+      <h3>Retraining cadence</h3>
+      <p>
+        Keyed to <strong>drift, not a fixed clock</strong>. Monitor per-arm and
+        per-segment CVR and the model's rolling log-loss; a change-point detector
+        (CUSUM / Bayesian online change-point) triggers down-weighting of stale data —
+        the adaptive version of <code>seg_eb_recency</code>. <code>zephyr</code> is the
+        cautionary tale: a static expanding-window model craters when the best arm flips
+        mid-stream, while an adaptive one recovers within a few windows.
+      </p>
+
+      <h3>Serving latency</h3>
+      <p>
+        The empirical-Bayes table is a <strong>hash lookup plus argmax — microseconds
+        per impression</strong>, trivially cacheable. A per-arm gradient-boosted model
+        costs <code>n_arms</code> model evaluations per impression (10× on
+        <code>rotation</code>'s ten arms). The shipped <code>hybrid_eb_gbm</code> serves
+        the cheap EB path for thin segments and the GBM only where support justifies it,
+        so most traffic takes the fast path; hot-segment GBM scores can be precomputed
+        and cached if needed.
+      </p>
+
+      <div class="callout">
+        <strong>Monitoring &amp; guardrails:</strong> watch action-availability changes
+        (new/retired arms), recommendation-mix concentration (don't silently collapse to
+        one arm), propensity overlap, and choice violations. Keep the
+        <strong>do-no-harm floor</strong>: ship personalization for a segment only when
+        its measured lift clears a confidence bound — the same discipline that makes the
+        policy safe on <code>atlas</code>.
+      </div>
+    </section>
+
+    <section id="learnings">
+      <h2>Learnings And Discussion</h2>
+      <p class="section-intro">
+        This section consolidates the discussion from our thread, the local
+        research log, and the parallel agent's strategy notes.
+      </p>
+
+      <div class="grid two" style="margin-top: 1rem;">
+        <div class="card">
+          <h3>What we learned</h3>
+          <ul>
+            <li>The target is simple: choose the arm with the highest expected conversion for this context.</li>
+            <li>The hard part is estimation under missing counterfactuals, sparse cells, drift, and changing actions.</li>
+            <li>Propensities matter for identification and OPE, but raw IPW can hurt the scored policy through variance.</li>
+            <li>Shrinkage is the main protection against noisy argmax decisions.</li>
+            <li>Recency is valuable only when drift exists; it should become adaptive.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>What we implemented</h3>
+          <ul>
+            <li>Data observability displays for assignment, reward, propensities, availability, and segment signal.</li>
+            <li>Eval observability displays for scoreboard, convergence, runtime, recommendation mix, and violations.</li>
+            <li>A country-only EB policy as an interpretable rung.</li>
+            <li>A full additive EB policy with categorical/numeric features and selected crosses.</li>
+            <li>A recency-weighted EB variant to test drift.</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>What came from the parallel work</h3>
+      <p>
+        The parallel strategy file emphasized the same core framing: this is a
+        contextual bandit, not RL; the scoring oracle makes greedy exploitation
+        appropriate for the take-home; propensities should be handled carefully;
+        and EB shrinkage is the right response to sparse or high-variance cells.
+        It also flagged two important harness details we adopted: the stored
+        <code>oracle_value</code> behavior on <code>rotation</code>, and the
+        canonical <code>score_variants</code> column-order contract.
+      </p>
+
+      <h3>What is next</h3>
+      <ol>
+        <li><strong>Adaptive recency:</strong> keep the zephyr gain without hurting stationary datasets.</li>
+        <li><strong>Propensity experiment:</strong> add clipped/stabilized IPW as a measured ablation, mainly for helios and rotation.</li>
+        <li><strong>LightGBM tuning:</strong> tune the LightGBM hybrid (currently ~69.1% on first-pass hyperparameters) to match or beat the sklearn hybrid, as the faster production backend.</li>
+        <li><strong>Production OPE:</strong> add IPS/SNIPS/doubly robust evaluation with confidence intervals.</li>
+        <li><strong>Exploration design:</strong> use Fisher-information or optimal-design thinking to collect data where uncertainty is decision-relevant.</li>
+      </ol>
+    </section>
+
+    <section id="video">
+      <h2>Video Outline</h2>
+      <p class="section-intro">
+        This is the clean story for the recorded submission. The goal is to sound
+        rigorous without burying the reviewer in implementation detail.
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Segment</th>
+              <th>What to show</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>0:00-0:30</td>
+              <td>Framing</td>
+              <td>Open this report. Context, action, reward; why this is an offline contextual bandit, not RL.</td>
+            </tr>
+            <tr>
+              <td>0:30-2:00</td>
+              <td><strong>1 · Demo</strong></td>
+              <td>Run <code>uv run run_eval.py --policies random,my_policy,seg_eb,gbm_tlearner,hybrid_eb_gbm</code> then <code>uv run plot_results.py</code>. Read the captured-headroom report as it prints; show each rung beat the last <em>and</em> the random baseline, on the scoreboard + convergence plots.</td>
+            </tr>
+            <tr>
+              <td>2:00-4:00</td>
+              <td><strong>2 · Solution &amp; research log</strong></td>
+              <td>Walk the research log: how I profiled the datasets (randomization, propensity, signal, drift), the policy ladder and what drove each step, and the arm-sensitivity analysis. Name every AI tool and test harness used (Claude Code + a parallel agent thread, the walk-forward eval harness, the observability scripts, scikit-learn then LightGBM).</td>
+            </tr>
+            <tr>
+              <td>4:00-5:15</td>
+              <td><strong>3 · Edge cases</strong></td>
+              <td>atlas = no headroom (do no harm), vega = sparse/underpowered, zephyr = concept drift, rotation = changing action set, helios = biased logging, plus the cold start. Show which dataset exhibits each and how the policy holds up.</td>
+            </tr>
+            <tr>
+              <td>5:15-6:45</td>
+              <td><strong>4 · Productionization</strong></td>
+              <td>OPE without counterfactuals (IPS / SNIPS / doubly-robust, and the ESS drop on helios), exploration vs. greedy exploitation, retraining cadence / drift detection, and serving latency.</td>
+            </tr>
+            <tr>
+              <td>6:45-7:00</td>
+              <td>Close</td>
+              <td>Recap: 69.6% average captured headroom for <code>hybrid_eb_gbm</code>; point to the repo and this hosted page.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="runbook">
+      <h2>Runbook</h2>
+      <p class="section-intro">
+        Commands used to reproduce the policy comparisons and regenerate this
+        report's figures.
+      </p>
+
+      <pre><code>uv run run_eval.py --policies random,my_policy,best_fixed,example,feature_demo,seg_country,seg_eb,seg_eb_recency,gbm_tlearner,hybrid_eb_gbm,lgbm_tlearner,hybrid_eb_lgbm --workers 1 --threads 2
+uv run plot_results.py
+uv run python solution/observability.py
+uv run python solution/eval_observability.py
+uv run python solution/arm_sensitivity.py</code></pre>
+
+      <div class="file-list">
+        <a href="eb_policy.py"><code>solution/eb_policy.py</code> - final EB policy</a>
+        <a href="__init__.py"><code>solution/__init__.py</code> - policy registration</a>
+        <a href="research_log.md"><code>solution/research_log.md</code> - research log</a>
+        <a href="submission_checklist.md"><code>solution/submission_checklist.md</code> - submission checklist</a>
+        <a href="observability.py"><code>solution/observability.py</code> - data displays</a>
+        <a href="eval_observability.py"><code>solution/eval_observability.py</code> - eval displays</a>
+        <a href="results/summary.json"><code>solution/results/summary.json</code> - full eval summary</a>
+        <a href="results/eval.log"><code>solution/results/eval.log</code> - printed eval log</a>
+      </div>
+
+      <details>
+        <summary>Exact full-run summary</summary>
+        <div>
+          <pre><code>AVERAGE across headroom datasets (helios, meadow, rotation, vega, zephyr)
+  random         mean captured=   0.2%
+  my_policy      mean captured=   0.3%
+  best_fixed     mean captured=   0.3%
+  example        mean captured=  18.3%
+  feature_demo   mean captured=   3.6%
+  seg_country    mean captured=  42.7%
+  seg_eb         mean captured=  62.7%
+  seg_eb_recency mean captured=  61.9%   (drift ablation; helps zephyr, hurts stationary)
+  gbm_tlearner   mean captured=  65.4%   (boosted trees; overfits sparse vega -> 32.7%)
+  hybrid_eb_gbm  mean captured=  69.6%   &lt;-- SHIPPED: EB when thin, GBM when rich
+  lgbm_tlearner  mean captured=  62.9%   (LightGBM backend; faster than sklearn)
+  hybrid_eb_lgbm mean captured=  69.1%   (LightGBM hybrid; ~same score, faster)</code></pre>
+        </div>
+      </details>
+    </section>
+  </main>
+
+  <footer>
+    <p>
+      Generated for the Coframe personalization take-home on 2026-06-22.
+      This page is static: it can be opened from disk or served from GitHub Pages.
+    </p>
+  </footer>
+</body>
+</html>

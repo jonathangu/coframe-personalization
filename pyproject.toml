@@ -1,0 +1,21 @@
+[project]
+name = "personalization-harness"
+version = "0.1.0"
+description = "Coframe Applied Science take-home: personalization policy harness."
+readme = "README.md"
+# The harness uses datetime.UTC and `X | None` typing, so Python 3.11+ is required.
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=1.24",
+    "pandas>=2.0",
+    "pyarrow>=14.0",
+    "matplotlib>=3.7",
+    "scikit-learn>=1.4",
+    "lightgbm>=4.0",
+]
+
+[tool.uv]
+# This is a run-the-scripts harness (engine/, policies/, solution/ are imported
+# from the working directory), not an installable package — so don't build/install
+# it, just manage its dependencies.
+package = false

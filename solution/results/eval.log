@@ -1,0 +1,90 @@
+==============================================================================
+CAPTURED HEADROOM (true value vs per-impression oracle)
+==============================================================================
+dataset    policy          captured    value  bestfix   oracle
+------------------------------------------------------------------------------
+atlas      random               n/a    6.00%    6.00%    6.00%
+atlas      best_fixed           n/a    6.00%    6.00%    6.00%
+atlas      my_policy            n/a    6.00%    6.00%    6.00%
+atlas      example              n/a    6.00%    6.00%    6.00%
+atlas      seg_country          n/a    6.00%    6.00%    6.00%
+atlas      seg_eb               n/a    6.00%    6.00%    6.00%
+atlas      seg_eb_recency       n/a    6.00%    6.00%    6.00%
+atlas      gbm_tlearner         n/a    6.00%    6.00%    6.00%
+atlas      hybrid_eb_gbm        n/a    6.00%    6.00%    6.00%
+atlas      lgbm_tlearner        n/a    6.00%    6.00%    6.00%
+atlas      hybrid_eb_lgbm       n/a    6.00%    6.00%    6.00%
+------------------------------------------------------------------------------
+helios     random             -0.4%    7.96%    8.00%   19.34%
+helios     best_fixed         -0.1%    7.99%    8.00%   19.34%
+helios     my_policy          -0.1%    7.99%    8.00%   19.34%
+helios     example            19.8%   10.25%    8.00%   19.34%
+helios     seg_country        55.6%   14.31%    8.00%   19.34%
+helios     seg_eb             77.3%   16.77%    8.00%   19.34%
+helios     seg_eb_recency     75.1%   16.52%    8.00%   19.34%
+helios     gbm_tlearner       78.3%   16.88%    8.00%   19.34%
+helios     hybrid_eb_gbm      79.7%   17.04%    8.00%   19.34%
+helios     lgbm_tlearner      76.3%   16.66%    8.00%   19.34%
+helios     hybrid_eb_lgbm     78.2%   16.87%    8.00%   19.34%
+------------------------------------------------------------------------------
+meadow     random              0.2%    8.02%    8.00%   17.90%
+meadow     best_fixed          0.2%    8.02%    8.00%   17.90%
+meadow     my_policy           0.2%    8.02%    8.00%   17.90%
+meadow     example            26.2%   10.59%    8.00%   17.90%
+meadow     seg_country        47.0%   12.65%    8.00%   17.90%
+meadow     seg_eb             72.2%   15.15%    8.00%   17.90%
+meadow     seg_eb_recency     70.0%   14.93%    8.00%   17.90%
+meadow     gbm_tlearner       78.7%   15.79%    8.00%   17.90%
+meadow     hybrid_eb_gbm      78.4%   15.76%    8.00%   17.90%
+meadow     lgbm_tlearner      76.6%   15.58%    8.00%   17.90%
+meadow     hybrid_eb_lgbm     77.5%   15.67%    8.00%   17.90%
+------------------------------------------------------------------------------
+rotation   random             -0.1%    6.02%    6.03%   18.96%
+rotation   best_fixed         -0.1%    6.02%    6.03%   18.96%
+rotation   my_policy          -0.1%    6.02%    6.03%   18.96%
+rotation   example            13.0%    7.71%    6.03%   18.96%
+rotation   seg_country        41.6%   11.41%    6.03%   18.96%
+rotation   seg_eb             61.2%   13.95%    6.03%   18.96%
+rotation   seg_eb_recency     57.5%   13.46%    6.03%   18.96%
+rotation   gbm_tlearner       61.4%   13.97%    6.03%   18.96%
+rotation   hybrid_eb_gbm      61.9%   14.04%    6.03%   18.96%
+rotation   lgbm_tlearner      57.7%   13.50%    6.03%   18.96%
+rotation   hybrid_eb_lgbm     61.1%   13.93%    6.03%   18.96%
+------------------------------------------------------------------------------
+vega       random              1.3%    5.08%    5.00%   11.51%
+vega       best_fixed         -0.3%    4.98%    5.00%   11.51%
+vega       my_policy          -0.3%    4.98%    5.00%   11.51%
+vega       example            13.8%    5.90%    5.00%   11.51%
+vega       seg_country        42.3%    7.75%    5.00%   11.51%
+vega       seg_eb             55.3%    8.60%    5.00%   11.51%
+vega       seg_eb_recency     48.2%    8.14%    5.00%   11.51%
+vega       gbm_tlearner       32.7%    7.13%    5.00%   11.51%
+vega       hybrid_eb_gbm      55.3%    8.60%    5.00%   11.51%
+vega       lgbm_tlearner      29.5%    6.92%    5.00%   11.51%
+vega       hybrid_eb_lgbm     55.3%    8.60%    5.00%   11.51%
+------------------------------------------------------------------------------
+zephyr     random              0.1%    8.01%    8.00%   18.92%
+zephyr     best_fixed          1.6%    8.17%    8.00%   18.92%
+zephyr     my_policy           1.6%    8.17%    8.00%   18.92%
+zephyr     example            18.9%   10.06%    8.00%   18.92%
+zephyr     seg_country        27.2%   10.97%    8.00%   18.92%
+zephyr     seg_eb             47.4%   13.18%    8.00%   18.92%
+zephyr     seg_eb_recency     58.9%   14.43%    8.00%   18.92%
+zephyr     gbm_tlearner       75.9%   16.29%    8.00%   18.92%
+zephyr     hybrid_eb_gbm      72.7%   15.94%    8.00%   18.92%
+zephyr     lgbm_tlearner      74.4%   16.13%    8.00%   18.92%
+zephyr     hybrid_eb_lgbm     73.1%   15.98%    8.00%   18.92%
+------------------------------------------------------------------------------
+
+AVERAGE across headroom datasets        
+  random         mean captured=   0.2%  (n=5 datasets)  train=0.0s infer=0.07s
+  best_fixed     mean captured=   0.3%  (n=5 datasets)  train=0.14s infer=0.12s
+  my_policy      mean captured=   0.3%  (n=5 datasets)  train=0.16s infer=0.07s
+  example        mean captured=  18.3%  (n=5 datasets)  train=1.99s infer=0.23s
+  seg_country    mean captured=  42.7%  (n=5 datasets)  train=2.74s infer=0.22s
+  seg_eb         mean captured=  62.7%  (n=5 datasets)  train=19.28s infer=1.69s
+  seg_eb_recency mean captured=  61.9%  (n=5 datasets)  train=19.69s infer=1.67s
+  gbm_tlearner   mean captured=  65.4%  (n=5 datasets)  train=55.63s infer=4.46s
+  hybrid_eb_gbm  mean captured=  69.6%  (n=5 datasets)  train=36.03s infer=3.15s
+  lgbm_tlearner  mean captured=  62.9%  (n=5 datasets)  train=69.79s infer=8.4s
+  hybrid_eb_lgbm mean captured=  69.1%  (n=5 datasets)  train=57.79s infer=5.71s
